@@ -14,32 +14,33 @@ import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
 /// Abstract base class
-abstract class FixedPointSqrtBase<FpType extends FloatingPoint> extends Module {
+abstract class FixedPointSqrtBase extends Module {
   /// Width of the input and output fields.
   final int numWidth;
 
   /// The value [a], named this way to allow for a local variable 'a'.
   @protected
-  late final Logic a;
+  late final FixedPoint a;
 
-  /// getter for the computed [FloatingPoint] output.
-  late final Logic sqrt = a.clone(name: 'sqrt')..gets(output('sqrt'));
+  /// getter for the computed output.
+  late final FixedPoint sqrt = a.clone(name: 'sqrt')..gets(output('sqrt'));
 
   /// Square root a fixed point number [a], returning result in [sqrt].
-  FixedPointSqrtBase(Logic a,
+  FixedPointSqrtBase(FixedPoint a,
       {super.name = 'fixed_point_square_root', String? definitionName})
       : numWidth = a.width,
         super(
             definitionName:
                 definitionName ?? 'FixedPointSquareRoot_E${a.width}') {
-    this.a = (a.clone(name: 'a') as FpType)
-      ..gets(addInput('a', a, width: a.width));
+    this.a = a.clone(name: 'a')..gets(addInput('a', a, width: a.width));
 
     addOutput('sqrt', width: numWidth);
   }
 }
 
 /// Implementation
+/// Algorithm explained here;
+/// https://www.reddit.com/r/math/comments/tc7lur/computing_square_roots_in_binary_by_hand_is/?rdt=33100
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
   FixedPointSqrt(super.a);
