@@ -5,13 +5,15 @@
 // An abstract base class defining the API for floating-point square root.
 //
 // 2025 March 3
-// Authors: James Farwell <james.c.farwell@intel.com>, Stephen Weeks <stephen.weeks@intel.com>
+// Authors: James Farwell <james.c.farwell@intel.com>,
+//Stephen Weeks <stephen.weeks@intel.com>,
+//Curtis Anderson <curtis.anders@intel.com>
 
-/// An abstract API for floating point square root.
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
+/// An abstract API for floating point square root.
 abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
   /// Width of the output exponent field.
   final int exponentWidth;
