@@ -9,6 +9,8 @@
 // Weeks <stephen.weeks@intel.com>
 
 /// An abstract API for fixed point square root.
+library;
+
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
@@ -31,7 +33,7 @@ abstract class FixedPointSqrtBase extends Module {
       : numWidth = a.width,
         super(
             definitionName:
-                definitionName ?? 'FixedPointSquareRoot_E${a.width}') {
+                definitionName ?? 'FixedPointSquareRoot${a.width}') {
     this.a = a.clone(name: 'a')..gets(addInput('a', a, width: a.width));
 
     addOutput('sqrt', width: numWidth);
