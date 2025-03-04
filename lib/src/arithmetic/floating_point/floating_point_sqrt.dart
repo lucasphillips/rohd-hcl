@@ -43,8 +43,10 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
     ..gets(output('sqrt'));
 
   /// getter for the [error] output.
-  late final Logic error = (a.clone(name: 'error') as Logic)
-    ..gets(output('error'));
+  late final Logic error = Logic(name: 'error')..gets(output('error'));
+
+  /// The internal error signal to pass through
+  late final Logic errorSig;
 
   /// Square root a floating point number [a], returning result in [sqrt].
   /// - [clk], [reset], [enable] are optional inputs to control a pipestage
@@ -68,7 +70,9 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
       ..gets(addInput('a', a, width: a.width));
 
     addOutput('sqrt', width: exponentWidth + mantissaWidth + 1);
+    errorSig = Logic(name: 'error');
     addOutput('error');
+    output('error') <= errorSig;
   }
 
   /// Pipelining helper that uses the context for signals clk/enable/reset
