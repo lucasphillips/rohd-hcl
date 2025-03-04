@@ -35,29 +35,34 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     output('error') <= internalError;
 
     // check to see if we do sqrt at all or just return a
-    final isInf = a.isAnInfinity;
-    final isNaN = a.isNaN;
-    final isZero = a.isAZero;
-    final enableSqrt = ~((isInf | isNaN | isZero) | a.sign);
+    final isInf = a.isAnInfinity.named('isInf');
+    final isNaN = a.isNaN.named('isNan');
+    final isZero = a.isAZero.named('isZero');
+    final enableSqrt = ~((isInf | isNaN | isZero) | a.sign).named('enableSqrt');
 
     // use fixed sqrt unit
-    final aFixed = FixedPoint(
-        signed: a.sign.value.toBool(), m: 1, n: a.mantissa.value.toInt());
-    final fixedSqrt =
-        enableSqrt.value.toBool() ? FixedPointSqrt(aFixed).sqrt : aFixed;
+    final aFixed = FixedPoint(signed: false, m: 1, n: a.mantissa.width);
+    aFixed <= [Const(1), a.mantissa].swizzle();
+
+    // mux to choose if we do square root or not
+    final fixedSqrt = aFixed.clone()
+      ..gets(mux(enableSqrt, FixedPointSqrt(aFixed).sqrt, aFixed)
+          .named('sqrtMux'));
+
+    // convert back to floating point representation
     final fpSqrt = FixedToFloat(fixedSqrt,
         exponentWidth: a.exponent.width, mantissaWidth: a.mantissa.width);
 
     // final calculation results
     Combinational([
-      error < 0,
+      error < Const(0),
       If.block([
         Iff(isInf & ~a.sign, [
           outputSqrt < outputSqrt.inf(),
         ]),
         ElseIf(isInf & a.sign, [
           outputSqrt < outputSqrt.inf(negative: true),
-          error < 1,
+          error < Const(1),
         ]),
         ElseIf(isNaN, [
           outputSqrt < outputSqrt.nan,
@@ -67,7 +72,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         ]),
         ElseIf(a.sign, [
           outputSqrt < a,
-          error < 1,
+          error < Const(1),
         ]),
         Else([
           outputSqrt.sign < a.sign,
