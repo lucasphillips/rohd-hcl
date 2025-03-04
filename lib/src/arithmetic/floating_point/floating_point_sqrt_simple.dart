@@ -35,15 +35,17 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     output('error') <= internalError;
 
     // check to see if we do sqrt at all or just return a
-    final isInf = a.isAnInfinity.named('isInf');
-    final isNaN = a.isNaN.named('isNan');
-    final isZero = a.isAZero.named('isZero');
+    final isInf = a.isAnInfinity;
+    final isNaN = a.isNaN;
+    final isZero = a.isAZero;
+    final enableSqrt = ~((isInf | isNaN | isZero) | a.sign);
 
     // use fixed sqrt unit
     final aFixed = FixedPoint(
         signed: a.sign.value.toBool(), m: 1, n: a.mantissa.value.toInt());
-    final fixedSqrt = FixedPointSqrt(aFixed);
-    final fpSqrt = FixedToFloat(fixedSqrt.sqrt,
+    final fixedSqrt =
+        enableSqrt.value.toBool() ? FixedPointSqrt(aFixed).sqrt : aFixed;
+    final fpSqrt = FixedToFloat(fixedSqrt,
         exponentWidth: a.exponent.width, mantissaWidth: a.mantissa.width);
 
     // final calculation results
