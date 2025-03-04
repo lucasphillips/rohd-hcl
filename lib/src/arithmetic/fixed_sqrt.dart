@@ -11,6 +11,8 @@
 /// An abstract API for fixed point square root.
 library;
 
+import 'dart:ffi';
+
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
@@ -45,5 +47,34 @@ abstract class FixedPointSqrtBase extends Module {
 /// https://www.reddit.com/r/math/comments/tc7lur/computing_square_roots_in_binary_by_hand_is/?rdt=33100
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
-  FixedPointSqrt(super.a);
+  FixedPointSqrt(super.a) {
+    Logic solution = a.clone(name: 'solution');  //TODO: limit/expand these to the required width
+    Logic remainder = a.clone(name: 'remainder');
+    Logic subtractionValue = a.clone(name: 'subValue');
+
+    // loop once through input value
+    for (var i = 0; i < numWidth >> 1; i++) {
+      remainder = ; // append bits from num, two at a time
+      subtractionValue = ;
+      solution = ;
+      if (true == subtractionValue.lte(remainder))
+      {
+        remainder =
+        solution |= 1;
+      }
+    }
+    // loop again to finish remainder
+    for (var i = 0; i < numWidth >> 1; i++) {
+      remainder = ; // don't try to append bits from num, they are done
+      subtractionValue = ;
+      solution = ;
+      if (subtractionValue <= remainder)
+      {
+        remainder =
+        solution |= 1;
+      }
+    }
+    // assign solution to sqrt
+    sqrt <= solution;
+  }
 }
