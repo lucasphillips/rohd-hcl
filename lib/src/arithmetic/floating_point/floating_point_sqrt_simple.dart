@@ -40,15 +40,18 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final isZero = a.isAZero.named('isZero');
 
     // use fixed sqrt unit
-    // TODO: Need to figure out how to conver float to fixedpoint?
-    // final fixedSqrt = FixedPointSqrt();
+    final aFixed = FixedPoint(
+        signed: a.sign.value.toBool(), m: 1, n: a.mantissa.value.toInt());
+    final fixedSqrt = FixedPointSqrt(aFixed);
+    final fpSqrt = FixedToFloat(fixedSqrt.sqrt,
+        exponentWidth: a.exponent.width, mantissaWidth: a.mantissa.width);
 
     // final calculation results
     Combinational([
+      error < 0,
       If.block([
         Iff(isInf & ~a.sign, [
           outputSqrt < outputSqrt.inf(),
-          error < 0,
         ]),
         ElseIf(isInf & a.sign, [
           outputSqrt < outputSqrt.inf(negative: true),
@@ -56,18 +59,18 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         ]),
         ElseIf(isNaN, [
           outputSqrt < outputSqrt.nan,
-          error < 0,
         ]),
         ElseIf(isZero, [
           outputSqrt < a,
-          error < 0,
         ]),
         ElseIf(a.sign, [
           outputSqrt < a,
           error < 1,
         ]),
         Else([
-          // TODO: Add the output from the fixed point here
+          outputSqrt.sign < a.sign,
+          outputSqrt.exponent < fpSqrt.float.exponent,
+          outputSqrt.mantissa < fpSqrt.float.mantissa,
         ])
       ])
     ]);
