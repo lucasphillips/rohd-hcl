@@ -13,8 +13,9 @@ import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
-abstract class FixedPointSqrt<FpType extends FloatingPoint> extends Module {
-  /// Width of the output exponent field.
+/// Abstract base class
+abstract class FixedPointSqrtBase<FpType extends FloatingPoint> extends Module {
+  /// Width of the input and output fields.
   final int numWidth;
 
   /// The value [a], named this way to allow for a local variable 'a'.
@@ -25,7 +26,7 @@ abstract class FixedPointSqrt<FpType extends FloatingPoint> extends Module {
   late final Logic sqrt = a.clone(name: 'sqrt')..gets(output('sqrt'));
 
   /// Square root a fixed point number [a], returning result in [sqrt].
-  FixedPointSqrt(Logic a,
+  FixedPointSqrtBase(Logic a,
       {super.name = 'fixed_point_square_root', String? definitionName})
       : numWidth = a.width,
         super(
@@ -36,4 +37,10 @@ abstract class FixedPointSqrt<FpType extends FloatingPoint> extends Module {
 
     addOutput('sqrt', width: numWidth);
   }
+}
+
+/// Implementation
+class FixedPointSqrt extends FixedPointSqrtBase {
+  /// Constructor
+  FixedPointSqrt(super.a);
 }
