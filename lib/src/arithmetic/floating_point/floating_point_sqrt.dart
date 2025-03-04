@@ -12,15 +12,12 @@ import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
-abstract class FloatingPointSqrt<FPType extends FloatingPoint> extends Module {
+abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
   /// Width of the output exponent field.
   final int exponentWidth;
 
   /// Width of the output mantissa field.
   final int mantissaWidth;
-
-  /// Error for the output of the square root computation.
-  final Logic error;
 
   /// The [clk] : if a non-null clock signal is passed in, a pipestage is added
   /// to the square root to help optimize frequency.
@@ -36,4 +33,45 @@ abstract class FloatingPointSqrt<FPType extends FloatingPoint> extends Module {
   /// flops.
   @protected
   late final Logic? enable;
+
+  /// The value [a], named this way to allow for a local variable 'a'.
+  @protected
+  late final FpType a;
+
+  /// getter for the computed [FloatingPoint] output.
+  late final FloatingPoint sqrt = (a.clone(name: 'sqrt') as FpType)
+    ..gets(output('sqrt'));
+
+  /// getter for the [error] output.
+  late final Logic error = (a.clone(name: 'error') as Logic)
+    ..gets(output('error'));
+
+  /// Square root a floating point number [a], returning result in [sqrt].
+  /// - [clk], [reset], [enable] are optional inputs to control a pipestage
+  /// (only inserted if [clk] is provided)
+  FloatingPointSqrt(FpType a,
+      {Logic? clk,
+      Logic? reset,
+      Logic? enable,
+      super.name = 'floating_point_square_root',
+      String? definitionName})
+      : exponentWidth = a.exponent.width,
+        mantissaWidth = a.mantissa.width,
+        super(
+            definitionName: definitionName ??
+                'FloatingPointSquareRoot_E${a.exponent.width}'
+                    'M${a.mantissa.width}') {
+    this.clk = (clk != null) ? addInput('clk', clk) : null;
+    this.reset = (reset != null) ? addInput('reset', reset) : null;
+    this.enable = (enable != null) ? addInput('enable', enable) : null;
+    this.a = (a.clone(name: 'a') as FpType)
+      ..gets(addInput('a', a, width: a.width));
+
+    addOutput('sqrt', width: exponentWidth + mantissaWidth + 1);
+    addOutput('error');
+  }
+
+  /// Pipelining helper that uses the context for signals clk/enable/reset
+  Logic localFlop(Logic input) =>
+      condFlop(clk, input, en: enable, reset: reset);
 }
