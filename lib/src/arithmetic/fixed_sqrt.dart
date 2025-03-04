@@ -48,30 +48,36 @@ abstract class FixedPointSqrtBase extends Module {
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
   FixedPointSqrt(super.a) {
-    Logic solution = a.clone(name: 'solution');  //TODO: limit/expand these to the required width
+    Logic solution = a.clone(name: 'solution');
     Logic remainder = a.clone(name: 'remainder');
     Logic subtractionValue = a.clone(name: 'subValue');
 
     // loop once through input value
     for (var i = 0; i < numWidth >> 1; i++) {
-      remainder = ; // append bits from num, two at a time
-      subtractionValue = ;
-      solution = ;
-      if (true == subtractionValue.lte(remainder))
-      {
-        remainder =
-        solution |= 1;
+      // append bits from num, two at a time
+      remainder = [
+        remainder.slice(numWidth - 3, 0),
+        a.slice(a.width - 1 - (i * 2), 2)
+      ].swizzle();
+      subtractionValue =
+          [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
+      solution = solution.slice(numWidth - 2, 0) + 1;
+      if (true == subtractionValue.lte(remainder)) {
+        remainder = remainder - subtractionValue;
+        solution |= Const(1);
       }
     }
     // loop again to finish remainder
     for (var i = 0; i < numWidth >> 1; i++) {
-      remainder = ; // don't try to append bits from num, they are done
-      subtractionValue = ;
-      solution = ;
-      if (subtractionValue <= remainder)
-      {
-        remainder =
-        solution |= 1;
+      // don't try to append bits from num, they are done
+      remainder =
+          [remainder.slice(numWidth - 3, 0), Const(0), Const(0)].swizzle();
+      subtractionValue =
+          [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
+      solution = solution.slice(numWidth - 2, 0) + 1;
+      if (true == subtractionValue.lte(remainder)) {
+        remainder = remainder - subtractionValue;
+        solution |= Const(1);
       }
     }
     // assign solution to sqrt
