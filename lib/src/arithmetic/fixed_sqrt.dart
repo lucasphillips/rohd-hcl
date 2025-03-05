@@ -11,8 +11,6 @@
 /// An abstract API for fixed point square root.
 library;
 
-import 'dart:ffi';
-
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
@@ -60,7 +58,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
         a.slice(a.width - 1 - (i * 2), 2)
       ].swizzle();
       subtractionValue =
-          [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
+          [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
       solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
 
       final solBit0 = Logic();
@@ -79,9 +77,9 @@ class FixedPointSqrt extends FixedPointSqrtBase {
     for (var i = 0; i < numWidth >> 1; i++) {
       // don't try to append bits from num, they are done
       remainder =
-          [remainder.slice(numWidth - 3, 0), Const(0), Const(0)].swizzle();
+          [remainder.slice(numWidth - 3, 0), Const(0, width: 2)].swizzle();
       subtractionValue =
-          [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
+          [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
       solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
 
       final solBit0 = Logic();
