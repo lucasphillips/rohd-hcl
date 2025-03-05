@@ -61,12 +61,20 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       ].swizzle();
       subtractionValue =
           [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
-      solution = solution.slice(numWidth - 2, 0) + 1;
-      if (true == subtractionValue.lte(remainder)) {
-        remainder = remainder - subtractionValue;
-        solution |= Const(1);
-      }
+      solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
+
+      final solBit0 = Logic();
+      Combinational([
+        If.block([
+          Iff(subtractionValue.lte(remainder), [
+            remainder < remainder - subtractionValue,
+            solBit0 < Const(1),
+          ])
+        ])
+      ]);
+      solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
     }
+
     // loop again to finish remainder
     for (var i = 0; i < numWidth >> 1; i++) {
       // don't try to append bits from num, they are done
@@ -74,11 +82,18 @@ class FixedPointSqrt extends FixedPointSqrtBase {
           [remainder.slice(numWidth - 3, 0), Const(0), Const(0)].swizzle();
       subtractionValue =
           [solution.slice(numWidth - 3, 0), Const(0), Const(1)].swizzle();
-      solution = solution.slice(numWidth - 2, 0) + 1;
-      if (true == subtractionValue.lte(remainder)) {
-        remainder = remainder - subtractionValue;
-        solution |= Const(1);
-      }
+      solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
+
+      final solBit0 = Logic();
+      Combinational([
+        If.block([
+          Iff(subtractionValue.lte(remainder), [
+            remainder < remainder - subtractionValue,
+            solBit0 < Const(1),
+          ])
+        ])
+      ]);
+      solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
     }
     // assign solution to sqrt
     sqrt <= solution;
