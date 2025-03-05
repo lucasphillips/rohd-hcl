@@ -16,7 +16,7 @@ import 'package:rohd_hcl/rohd_hcl.dart';
 class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     extends FloatingPointSqrt<FpType> {
   /// Square root one floating point number [a], returning results
-  /// [sqrt] and [error]
+  /// [sqrtR] and [error]
   FloatingPointSqrtSimple(super.a,
       {super.clk,
       super.reset,
@@ -28,11 +28,8 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final outputSqrt = FloatingPoint(
         exponentWidth: exponentWidth,
         mantissaWidth: mantissaWidth,
-        name: 'sqrt');
-    output('sqrt') <= outputSqrt;
-
-    final internalError = Logic(name: 'error');
-    output('error') <= internalError;
+        name: 'sqrtR');
+    output('sqrtR') <= outputSqrt;
 
     // check to see if we do sqrt at all or just return a
     final isInf = a.isAnInfinity.named('isInf');
@@ -46,7 +43,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
 
     // mux to choose if we do square root or not
     final fixedSqrt = aFixed.clone()
-      ..gets(mux(enableSqrt, FixedPointSqrt(aFixed).sqrt, aFixed)
+      ..gets(mux(enableSqrt, FixedPointSqrt(aFixed).sqrtF, aFixed)
           .named('sqrtMux'));
 
     // convert back to floating point representation
@@ -55,14 +52,14 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
 
     // final calculation results
     Combinational([
-      error < Const(0),
+      errorSig < Const(0),
       If.block([
         Iff(isInf & ~a.sign, [
           outputSqrt < outputSqrt.inf(),
         ]),
         ElseIf(isInf & a.sign, [
           outputSqrt < outputSqrt.inf(negative: true),
-          error < Const(1),
+          errorSig < Const(1),
         ]),
         ElseIf(isNaN, [
           outputSqrt < outputSqrt.nan,
@@ -76,7 +73,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
           outputSqrt.sign < a.sign,
           outputSqrt.exponent < a.exponent,
           outputSqrt.mantissa < a.mantissa,
-          error < Const(1),
+          errorSig < Const(1),
         ]),
         Else([
           outputSqrt.sign < a.sign,
