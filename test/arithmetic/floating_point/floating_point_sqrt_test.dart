@@ -50,7 +50,7 @@ void main() {
                 exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)
             .ofDouble(dSqrt);
         final expSqrtd = expSqrt.toDouble();
-        final expError = Const(0);
+        final Logic expError = Const(0);
 
         fp.put(fv);
         final fpOut = sqrtT.sqrtR;
@@ -62,7 +62,7 @@ void main() {
                 '(${fpOut.floatingPointValue.toDouble()}) actual\n'
                 '\t$expSqrtd ($expSqrt) expected');
 
-        expect(eOut, equals(expError),
+        expect(eOut.value, equals(expError.value),
             reason: 'error =\n'
                 '\t${eOut.value} actual\n'
                 '\t${expError.value} expected');
