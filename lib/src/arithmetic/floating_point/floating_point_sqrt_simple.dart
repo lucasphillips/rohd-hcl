@@ -68,10 +68,14 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
           outputSqrt < outputSqrt.nan,
         ]),
         ElseIf(isZero, [
-          outputSqrt < a,
+          outputSqrt.sign < a.sign,
+          outputSqrt.exponent < a.exponent,
+          outputSqrt.mantissa < a.mantissa,
         ]),
         ElseIf(a.sign, [
-          outputSqrt < a,
+          outputSqrt.sign < a.sign,
+          outputSqrt.exponent < a.exponent,
+          outputSqrt.mantissa < a.mantissa,
           error < Const(1),
         ]),
         Else([
