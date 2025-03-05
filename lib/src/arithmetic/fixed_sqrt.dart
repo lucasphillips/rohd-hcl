@@ -55,7 +55,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       // append bits from num, two at a time
       remainder = [
         remainder.slice(numWidth - 3, 0),
-        a.slice(a.width - 1 - (i * 2), 2)
+        a.slice(a.width - 1 - (i * 2), a.width - 2 - (i * 2))
       ].swizzle();
       subtractionValue =
           [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
@@ -67,6 +67,9 @@ class FixedPointSqrt extends FixedPointSqrtBase {
           Iff(subtractionValue.lte(remainder), [
             remainder < remainder - subtractionValue,
             solBit0 < Const(1),
+          ]),
+          Else([
+            solBit0 < Const(0),
           ])
         ])
       ]);
@@ -88,6 +91,9 @@ class FixedPointSqrt extends FixedPointSqrtBase {
           Iff(subtractionValue.lte(remainder), [
             remainder < remainder - subtractionValue,
             solBit0 < Const(1),
+          ]),
+          Else([
+            solBit0 < Const(0),
           ])
         ])
       ]);
