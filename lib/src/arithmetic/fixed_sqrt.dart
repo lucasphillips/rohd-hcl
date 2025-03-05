@@ -59,21 +59,26 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       ].swizzle();
       subtractionValue =
           [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
-      solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
+      solution = [
+        solution.slice(numWidth - 2, 0),
+        subtractionValue.lte(remainder)
+      ].swizzle();
+      mux(subtractionValue.lte(remainder), remainder - subtractionValue,
+          remainder);
 
-      final solBit0 = Logic();
-      Combinational([
-        If.block([
-          Iff(subtractionValue.lte(remainder), [
-            remainder < remainder - subtractionValue,
-            solBit0 < Const(1),
-          ]),
-          Else([
-            solBit0 < Const(0),
-          ])
-        ])
-      ]);
-      solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
+      //final solBit0 = Logic();
+      //Combinational([
+      //  If.block([
+      //    Iff(subtractionValue.lte(remainder), [
+      //      remainder < remainder - subtractionValue,
+      //      solBit0 < Const(1),
+      //    ]),
+      //    Else([
+      //      solBit0 < Const(0),
+      //    ])
+      //  ])
+      //]);
+      //solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
     }
 
     // loop again to finish remainder
@@ -83,23 +88,28 @@ class FixedPointSqrt extends FixedPointSqrtBase {
           [remainder.slice(numWidth - 3, 0), Const(0, width: 2)].swizzle();
       subtractionValue =
           [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
-      solution = [solution.slice(numWidth - 2, 0), Const(1)].swizzle();
+      solution = [
+        solution.slice(numWidth - 2, 0),
+        subtractionValue.lte(remainder)
+      ].swizzle();
+      mux(subtractionValue.lte(remainder), remainder - subtractionValue,
+          remainder);
 
-      final solBit0 = Logic();
-      Combinational([
-        If.block([
-          Iff(subtractionValue.lte(remainder), [
-            remainder < remainder - subtractionValue,
-            solBit0 < Const(1),
-          ]),
-          Else([
-            solBit0 < Const(0),
-          ])
-        ])
-      ]);
-      solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
+      //final solBit0 = Logic();
+      //Combinational([
+      //  If.block([
+      //    Iff(subtractionValue.lte(remainder), [
+      //      remainder < remainder - subtractionValue,
+      //      solBit0 < Const(1),
+      //    ]),
+      //    Else([
+      //      solBit0 < Const(0),
+      //    ])
+      //  ])
+      //]);
+      //solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
     }
     // assign solution to sqrt
-    sqrtF <= solution;
+    //sqrtF <= solution;
   }
 }
