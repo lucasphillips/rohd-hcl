@@ -67,11 +67,11 @@ class FixedPointSqrt extends FixedPointSqrtBase {
     output('sqrtF') <= outputSqrt;
 
     // loop once through input value
-    for (var i = 0; i < numWidth + 2 >> 1 + 1; i++) {
+    for (var i = 0; i < ((numWidth + 2) >> 1); i++) {
       // append bits from a, two at a time
       remainder = [
         remainder.slice(numWidth + 2 - 3, 0),
-        aLoc.slice(a.width - 1 - (i * 2), aLoc.width - 2 - (i * 2))
+        aLoc.slice(aLoc.width - 1 - (i * 2), aLoc.width - 2 - (i * 2))
       ].swizzle();
       subtractionValue =
           [solution.slice(numWidth + 2 - 3, 0), Const(1, width: 2)].swizzle();
@@ -84,7 +84,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
     }
 
     // loop again to finish remainder
-    for (var i = 0; i < numWidth + 18 >> 1; i++) {
+    for (var i = 0; i < ((numWidth + 2) >> 1); i++) {
       // don't try to append bits from a, they are done
       remainder =
           [remainder.slice(numWidth + 2 - 3, 0), Const(0, width: 2)].swizzle();
@@ -97,6 +97,6 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       remainder = mux(subtractionValue.lte(remainder),
           remainder - subtractionValue, remainder);
     }
-    outputSqrt <= solution.slice(aLoc.width - 2, 1);
+    outputSqrt <= solution.slice(aLoc.width - 1, 2);
   }
 }
