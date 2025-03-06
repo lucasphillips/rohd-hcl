@@ -11,6 +11,8 @@
 /// An abstract API for fixed point square root.
 library;
 
+import 'dart:ffi';
+
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
@@ -46,70 +48,55 @@ abstract class FixedPointSqrtBase extends Module {
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
   FixedPointSqrt(super.a) {
-    Logic solution = a.clone(name: 'solution');
-    Logic remainder = a.clone(name: 'remainder');
-    Logic subtractionValue = a.clone(name: 'subValue');
+    Logic solution =
+        FixedPoint(signed: a.signed, name: 'solution', m: a.m + 1, n: a.n + 1);
+    Logic remainder =
+        FixedPoint(signed: a.signed, name: 'remainder', m: a.m + 1, n: a.n + 1);
+    Logic subtractionValue =
+        FixedPoint(signed: a.signed, name: 'subValue', m: a.m + 1, n: a.n + 1);
+    Logic aLoc =
+        FixedPoint(signed: a.signed, name: 'aLoc', m: a.m + 1, n: a.n + 1);
+
+    solution = Const(0, width: aLoc.width);
+    remainder = Const(0, width: aLoc.width);
+    subtractionValue = Const(0, width: aLoc.width);
+    aLoc = [Const(0), a, Const(0)].swizzle();
+
+    final outputSqrt = a.clone(name: 'sqrtF');
+    //output('sqrtF') <= Const(0, width: a.width);
+    output('sqrtF') <= outputSqrt;
 
     // loop once through input value
-    for (var i = 0; i < numWidth >> 1; i++) {
-      // append bits from num, two at a time
+    for (var i = 0; i < numWidth + 2 >> 1 + 1; i++) {
+      // append bits from a, two at a time
       remainder = [
-        remainder.slice(numWidth - 3, 0),
-        a.slice(a.width - 1 - (i * 2), a.width - 2 - (i * 2))
+        remainder.slice(numWidth + 2 - 3, 0),
+        aLoc.slice(a.width - 1 - (i * 2), aLoc.width - 2 - (i * 2))
       ].swizzle();
       subtractionValue =
-          [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
+          [solution.slice(numWidth + 2 - 3, 0), Const(1, width: 2)].swizzle();
       solution = [
-        solution.slice(numWidth - 2, 0),
+        solution.slice(numWidth + 2 - 2, 0),
         subtractionValue.lte(remainder)
       ].swizzle();
-      mux(subtractionValue.lte(remainder), remainder - subtractionValue,
-          remainder);
-
-      //final solBit0 = Logic();
-      //Combinational([
-      //  If.block([
-      //    Iff(subtractionValue.lte(remainder), [
-      //      remainder < remainder - subtractionValue,
-      //      solBit0 < Const(1),
-      //    ]),
-      //    Else([
-      //      solBit0 < Const(0),
-      //    ])
-      //  ])
-      //]);
-      //solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
+      remainder = mux(subtractionValue.lte(remainder),
+          remainder - subtractionValue, remainder);
     }
 
     // loop again to finish remainder
-    for (var i = 0; i < numWidth >> 1; i++) {
-      // don't try to append bits from num, they are done
+    for (var i = 0; i < numWidth + 18 >> 1; i++) {
+      // don't try to append bits from a, they are done
       remainder =
-          [remainder.slice(numWidth - 3, 0), Const(0, width: 2)].swizzle();
+          [remainder.slice(numWidth + 2 - 3, 0), Const(0, width: 2)].swizzle();
       subtractionValue =
-          [solution.slice(numWidth - 3, 0), Const(1, width: 2)].swizzle();
+          [solution.slice(numWidth + 2 - 3, 0), Const(1, width: 2)].swizzle();
       solution = [
-        solution.slice(numWidth - 2, 0),
+        solution.slice(numWidth + 2 - 2, 0),
         subtractionValue.lte(remainder)
       ].swizzle();
-      mux(subtractionValue.lte(remainder), remainder - subtractionValue,
-          remainder);
-
-      //final solBit0 = Logic();
-      //Combinational([
-      //  If.block([
-      //    Iff(subtractionValue.lte(remainder), [
-      //      remainder < remainder - subtractionValue,
-      //      solBit0 < Const(1),
-      //    ]),
-      //    Else([
-      //      solBit0 < Const(0),
-      //    ])
-      //  ])
-      //]);
-      //solution <= [solution.slice(numWidth - 1, 1), solBit0].swizzle();
+      remainder = mux(subtractionValue.lte(remainder),
+          remainder - subtractionValue, remainder);
     }
-    // assign solution to sqrt
-    //sqrtF <= solution;
+    outputSqrt <= solution.slice(aLoc.width - 2, 1);
   }
 }
