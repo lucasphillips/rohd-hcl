@@ -20,8 +20,8 @@ void main() {
   });
   test('FP: square root with non-FP numbers', () {
     // building with 16-bit FP representation
-    const exponentWidth = 5;
-    const mantissaWidth = 10;
+    const exponentWidth = 8;
+    const mantissaWidth = 23;
 
     final fv = FloatingPointValue(
         sign: LogicValue.zero,
@@ -61,6 +61,41 @@ void main() {
                 '\t${fpOut.floatingPointValue}'
                 '(${fpOut.floatingPointValue.toDouble()}) actual\n'
                 '\t$expSqrtd ($expSqrt) expected');
+
+        expect(eOut.value, equals(expError.value),
+            reason: 'error =\n'
+                '\t${eOut.value} actual\n'
+                '\t${expError.value} expected');
+      }
+    }
+  });
+
+  test('FP: square root with error flag high', () {
+    const exponentWidth = 8;
+    const mantissaWidth = 23;
+
+    final fv = FloatingPointValue(
+        sign: LogicValue.zero,
+        exponent: LogicValue.filled(exponentWidth, LogicValue.one),
+        mantissa: LogicValue.filled(mantissaWidth, LogicValue.zero));
+
+    final fp = FloatingPoint(
+        exponentWidth: exponentWidth, mantissaWidth: mantissaWidth);
+
+    for (final sqrtDUT in [
+      FloatingPointSqrtSimple(fp),
+    ]) {
+      final testCases = [
+        fv.clonePopulator().positiveInfinity.negate(),
+        fv.clonePopulator().one.negate(),
+      ];
+
+      for (final test in testCases) {
+        final fv = test;
+        final expError = Const(1);
+
+        fp.put(fv);
+        final eOut = sqrtDUT.error;
 
         expect(eOut.value, equals(expError.value),
             reason: 'error =\n'
