@@ -19,7 +19,7 @@ void main() {
     await Simulator.reset();
   });
   test('sqrt(1)', () async {
-    final fixed = FixedPoint(signed: false, m: 1, n: 31);
+    final fixed = FixedPoint(signed: false, m: 3, n: 31);
     final dut = FixedPointSqrt(fixed);
     await dut.build();
     fixed.put(FixedPointValue.ofDouble(1,
@@ -31,7 +31,7 @@ void main() {
   });
 
   test('sqrt(1.5)', () async {
-    final fixed = FixedPoint(signed: false, m: 1, n: 31);
+    final fixed = FixedPoint(signed: false, m: 3, n: 31);
     final dut = FixedPointSqrt(fixed);
     await dut.build();
     fixed.put(FixedPointValue.ofDouble(1.5,
@@ -42,7 +42,7 @@ void main() {
     expect(fpvResult, fpvExpected);
   });
   test('sqrt(1.7)', () async {
-    final fixed = FixedPoint(signed: false, m: 1, n: 31);
+    final fixed = FixedPoint(signed: false, m: 3, n: 31);
     final dut = FixedPointSqrt(fixed);
     await dut.build();
     fixed.put(FixedPointValue.ofDouble(1.7,
@@ -52,14 +52,36 @@ void main() {
         signed: fixed.signed, m: fixed.m, n: fixed.n);
     expect(fpvResult, fpvExpected);
   });
-  test('sqrt(1.005)', () async {
-    final fixed = FixedPoint(signed: false, m: 1, n: 31);
+  test('sqrt(1.125)', () async {
+    final fixed = FixedPoint(signed: false, m: 3, n: 23);
     final dut = FixedPointSqrt(fixed);
     await dut.build();
-    fixed.put(FixedPointValue.ofDouble(1.005,
+    fixed.put(FixedPointValue.ofDouble(1.125,
         signed: fixed.signed, m: fixed.m, n: fixed.n));
     final fpvResult = dut.sqrtF.fixedPointValue;
-    final fpvExpected = FixedPointValue.ofDouble(sqrt(1.005),
+    final fpvExpected = FixedPointValue.ofDouble(sqrt(1.125),
+        signed: fixed.signed, m: fixed.m, n: fixed.n);
+    expect(fpvResult, fpvExpected);
+  });
+  test('sqrt(2.25)', () async {
+    final fixed = FixedPoint(signed: false, m: 3, n: 23);
+    final dut = FixedPointSqrt(fixed);
+    await dut.build();
+    fixed.put(FixedPointValue.ofDouble(2.25,
+        signed: fixed.signed, m: fixed.m, n: fixed.n));
+    final fpvResult = dut.sqrtF.fixedPointValue;
+    final fpvExpected = FixedPointValue.ofDouble(sqrt(2.25),
+        signed: fixed.signed, m: fixed.m, n: fixed.n);
+    expect(fpvResult, fpvExpected);
+  });
+  test('sqrt(3.999)', () async {
+    final fixed = FixedPoint(signed: false, m: 3, n: 23);
+    final dut = FixedPointSqrt(fixed);
+    await dut.build();
+    fixed.put(FixedPointValue.ofDouble(3.999,
+        signed: fixed.signed, m: fixed.m, n: fixed.n));
+    final fpvResult = dut.sqrtF.fixedPointValue;
+    final fpvExpected = FixedPointValue.ofDouble(sqrt(3.999),
         signed: fixed.signed, m: fixed.m, n: fixed.n);
     expect(fpvResult, fpvExpected);
   });
