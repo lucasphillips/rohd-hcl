@@ -56,37 +56,15 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final aFixed = FixedPoint(signed: false, m: 3, n: a.mantissa.width);
     aFixed <= [Const(1, width: 3), a.mantissa.getRange(0)].swizzle();
 
+    // mux if we shift left by 1 if exponent was odd
+    final aFixedAdj = aFixed.clone()
+      ..gets(mux(isExpOdd, [aFixed.slice(-2, 0), Const(0)].swizzle(), aFixed)
+          .named('oddMantissaMux'));
+
     // mux to choose if we do square root or not
-    final fixedCalcSqrt = aFixed.clone()
-      ..gets(mux(enableSqrt, FixedPointSqrt(aFixed).sqrtF, aFixed)
+    final fixedSqrt = aFixedAdj.clone()
+      ..gets(mux(enableSqrt, FixedPointSqrt(aFixedAdj).sqrtF, aFixedAdj)
           .named('sqrtMux'));
-
-    // if we have an odd value for the mantissa we calculate
-    // mantissa * sqrt(2)
-    final sqrtMult = FixedPointValue.ofDouble(sqrt(2),
-        signed: false, m: a.mantissa.width + 1, n: a.mantissa.width);
-
-    // need to expand our values because when we multiply two n-bit numbers
-    // we get an (n*2) - 1 number back.
-    // We have a special kind of value where our n will stay constant but
-    // our m will grow to n (general formula is [2*(n+m) - 1] - n)
-    final expandedCalc =
-        FixedPoint(signed: false, m: a.mantissa.width + 3, n: a.mantissa.width);
-    expandedCalc <=
-        [Const(0, fill: true, width: a.mantissa.width), fixedCalcSqrt]
-            .swizzle();
-
-    // calculate our adjusted odd mantissa
-    final fixedM = FixedPoint.of(
-            Const(sqrtMult.value, width: expandedCalc.width),
-            signed: false,
-            m: a.mantissa.width + 3,
-            n: a.mantissa.width) *
-        expandedCalc;
-
-    // select which mantissa we need to use
-    final fixedSqrt = expandedCalc.clone()
-      ..gets(mux(isExpOdd, fixedM, expandedCalc).named('mantissa select'));
 
     // convert back to floating point representation
     final fpSqrt = FixedToFloat(fixedSqrt,
