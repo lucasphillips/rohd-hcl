@@ -104,4 +104,33 @@ void main() {
       }
     }
   });
+
+  test('FP: targeted normalized sqrt', () {
+    const exponentWidth = 8;
+    const mantissaWidth = 23;
+
+    final fv1 = FloatingPointValue.populator(
+            exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)
+        .ofDouble(144);
+    final fp = FloatingPoint(
+        exponentWidth: exponentWidth, mantissaWidth: mantissaWidth);
+    fp.put(fv1);
+    final sqrtDUT = FloatingPointSqrtSimple(fp);
+    final compResult = sqrtDUT.sqrtR;
+    final compError = sqrtDUT.error;
+
+    final expResult = sqrt(fv1.toDouble());
+    final expError = Const(0);
+    expect(compResult.floatingPointValue.toDouble(), equals(expResult),
+        reason: '\t${fp.floatingPointValue} '
+            '(${fp.floatingPointValue.toDouble()}) =\n'
+            '\t${compResult.floatingPointValue}'
+            '(${compResult.floatingPointValue.toDouble()}) actual\n'
+            '\t$expResult ($expResult) expected');
+
+    expect(compError.value, equals(expError.value),
+        reason: 'error =\n'
+            '\t${expError.value} actual\n'
+            '\t${expError.value} expected');
+  });
 }

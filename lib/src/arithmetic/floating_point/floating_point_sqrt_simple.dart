@@ -9,6 +9,8 @@
 //Stephen Weeks <stephen.weeks@intel.com>,
 //Curtis Anderson <curtis.anders@intel.com>
 
+import 'dart:math';
+
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
@@ -37,14 +39,39 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final isZero = a.isAZero.named('isZero');
     final enableSqrt = ~((isInf | isNaN | isZero) | a.sign).named('enableSqrt');
 
+    // debias the exponent
+    final deBiasAmt = (1 << a.exponent.width - 1) - 1;
+
+    // deBias math
+    final deBiasExp = a.exponent - deBiasAmt;
+
+    // shift exponent
+    final shiftedExp =
+        [Const(0), deBiasExp.slice(a.exponent.width - 1, 1)].swizzle();
+
+    // check if exponent was odd
+    final isExpOdd = deBiasExp[0];
+
     // use fixed sqrt unit
     final aFixed = FixedPoint(signed: false, m: 1, n: a.mantissa.width);
-    aFixed <= [Const(1), a.mantissa].swizzle();
+    aFixed <= [Const(1), a.mantissa.getRange(0)].swizzle();
 
     // mux to choose if we do square root or not
-    final fixedSqrt = aFixed.clone()
+    final fixedCalcSqrt = aFixed.clone()
       ..gets(mux(enableSqrt, FixedPointSqrt(aFixed).sqrtF, aFixed)
           .named('sqrtMux'));
+
+    final sqrtMult = FixedPointValue.ofDouble(sqrt(2),
+        signed: false, m: 1, n: a.mantissa.width);
+
+    final fixedM = FixedPoint.of(
+            Const(sqrtMult.value, width: fixedCalcSqrt.width),
+            signed: false,
+            m: 1,
+            n: a.mantissa.width) *
+        fixedCalcSqrt.value;
+    final fixedSqrt = fixedCalcSqrt.clone()
+      ..gets(mux(isExpOdd, fixedM, fixedCalcSqrt));
 
     // convert back to floating point representation
     final fpSqrt = FixedToFloat(fixedSqrt,
@@ -77,7 +104,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         ]),
         Else([
           outputSqrt.sign < a.sign,
-          outputSqrt.exponent < fpSqrt.float.exponent,
+          outputSqrt.exponent < (shiftedExp + deBiasAmt),
           outputSqrt.mantissa < fpSqrt.float.mantissa,
         ])
       ])
