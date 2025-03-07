@@ -83,7 +83,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
     }
 
     // loop again to finish remainder
-    for (var i = 0; i < ((numWidth + 2) >> 1); i++) {
+    for (var i = 0; i < ((numWidth + 2) >> 1) - 1; i++) {
       // don't try to append bits from a, they are done
       remainder =
           [remainder.slice(numWidth + 2 - 3, 0), Const(0, width: 2)].swizzle();

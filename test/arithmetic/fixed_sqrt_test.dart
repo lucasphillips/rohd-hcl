@@ -97,7 +97,7 @@ void main() {
     expect(fpvResult, fpvExpected);
   });
   test('sqrt(3.9999998_2)', () async {
-    final fixed = FixedPoint(signed: false, m: 5, n: 23);
+    final fixed = FixedPoint(signed: false, m: 3, n: 23);
     final dut = FixedPointSqrt(fixed);
     await dut.build();
     fixed.put(FixedPointValue.ofDouble(3.9999998,
