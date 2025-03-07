@@ -28,4 +28,4 @@ This component converts an 8-bit floating-point (FP8) representation ([FloatingP
 
 ## FixedPointSqrt
 
-This component computes the square root of a 3.x fixed-point value, returning a result in the same format. The square root value is rounded to the ordered number of bits. The integral part must be 3 bits, and the fractional part may be any odd value <= 51. Even numbers of bits are currently not supported, integral bits in numbers other than 3 are currently not supported.
+This component computes the square root of a 3.x [FixedPoint](https://intel.github.io/rohd-hcl/rohd_hcl/FixedPoint-class.html) unsigned number, returning a result in the same format. The square root value is rounded to the ordered number of bits. The integral part must be 3 bits, and the fractional part may be any odd number of bits <= 51. Even numbers of bits are currently not supported, integral bits in numbers other than 3 are currently not supported.
