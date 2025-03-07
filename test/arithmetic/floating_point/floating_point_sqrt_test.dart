@@ -108,10 +108,11 @@ void main() {
   test('FP: targeted normalized sqrt', () {
     const exponentWidth = 8;
     const mantissaWidth = 23;
+    const testDouble = 288.0;
 
     final fv1 = FloatingPointValue.populator(
             exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)
-        .ofDouble(144);
+        .ofDouble(testDouble);
     final fp = FloatingPoint(
         exponentWidth: exponentWidth, mantissaWidth: mantissaWidth);
     fp.put(fv1);
@@ -119,14 +120,17 @@ void main() {
     final compResult = sqrtDUT.sqrtR;
     final compError = sqrtDUT.error;
 
-    final expResult = sqrt(fv1.toDouble());
+    final expResult = FloatingPointValue.populator(
+            exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)
+        .ofDouble(sqrt(testDouble));
     final expError = Const(0);
-    expect(compResult.floatingPointValue.toDouble(), equals(expResult),
+    expect(
+        compResult.floatingPointValue.toDouble(), equals(expResult.toDouble()),
         reason: '\t${fp.floatingPointValue} '
             '(${fp.floatingPointValue.toDouble()}) =\n'
             '\t${compResult.floatingPointValue}'
             '(${compResult.floatingPointValue.toDouble()}) actual\n'
-            '\t$expResult ($expResult) expected');
+            '\t$expResult (${expResult.toDouble()}) expected');
 
     expect(compError.value, equals(expError.value),
         reason: 'error =\n'
