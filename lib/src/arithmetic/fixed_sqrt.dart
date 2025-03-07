@@ -96,6 +96,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       remainder = mux(subtractionValue.lte(remainder),
           remainder - subtractionValue, remainder);
     }
+    solution = solution + 1;
     outputSqrt <= solution.slice(aLoc.width - 1, aLoc.width - a.width);
   }
 }
