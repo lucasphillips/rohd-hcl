@@ -9,8 +9,6 @@
 //Stephen Weeks <stephen.weeks@intel.com>,
 //Curtis Anderson <curtis.anders@intel.com>
 
-import 'dart:math';
-
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
 
@@ -47,7 +45,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
 
     // shift exponent
     final shiftedExp =
-        [Const(0), deBiasExp.slice(a.exponent.width - 1, 1)].swizzle();
+        [deBiasExp[-1], deBiasExp.slice(a.exponent.width - 1, 1)].swizzle();
 
     // check if exponent was odd
     final isExpOdd = deBiasExp[0];
@@ -90,9 +88,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
           outputSqrt.mantissa < a.mantissa,
         ]),
         ElseIf(a.sign, [
-          outputSqrt.sign < a.sign,
-          outputSqrt.exponent < a.exponent,
-          outputSqrt.mantissa < a.mantissa,
+          outputSqrt < outputSqrt.nan,
           errorSig < Const(1),
         ]),
         Else([
