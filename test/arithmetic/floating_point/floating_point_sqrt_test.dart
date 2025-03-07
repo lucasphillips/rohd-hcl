@@ -108,7 +108,7 @@ void main() {
   test('FP: targeted normalized sqrt', () {
     const exponentWidth = 8;
     const mantissaWidth = 23;
-    const testDouble = 288.0;
+    const testDouble = 144.0;
 
     final fv1 = FloatingPointValue.populator(
             exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)

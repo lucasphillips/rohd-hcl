@@ -44,7 +44,7 @@ abstract class FixedPointSqrtBase extends Module {
 
 /// Implementation
 /// Algorithm explained here;
-/// https://www.reddit.com/r/math/comments/tc7lur/computing_square_roots_in_binary_by_hand_is/?rdt=33100
+/// https://projectf.io/posts/square-root-in-verilog/
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
   FixedPointSqrt(super.a) {
@@ -83,7 +83,7 @@ class FixedPointSqrt extends FixedPointSqrtBase {
     }
 
     // loop again to finish remainder
-    for (var i = 0; i < ((numWidth + 2) >> 1) - 1; i++) {
+    for (var i = 0; i < ((numWidth + 2) >> 1); i++) {
       // don't try to append bits from a, they are done
       remainder =
           [remainder.slice(numWidth + 2 - 3, 0), Const(0, width: 2)].swizzle();
@@ -96,6 +96,6 @@ class FixedPointSqrt extends FixedPointSqrtBase {
       remainder = mux(subtractionValue.lte(remainder),
           remainder - subtractionValue, remainder);
     }
-    outputSqrt <= solution.slice(aLoc.width - 1, 2);
+    outputSqrt <= solution.slice(aLoc.width - 1, aLoc.width - a.width);
   }
 }

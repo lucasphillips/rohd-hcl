@@ -53,8 +53,8 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final isExpOdd = deBiasExp[0];
 
     // use fixed sqrt unit
-    final aFixed = FixedPoint(signed: false, m: 1, n: a.mantissa.width);
-    aFixed <= [Const(1), a.mantissa.getRange(0)].swizzle();
+    final aFixed = FixedPoint(signed: false, m: 3, n: a.mantissa.width);
+    aFixed <= [Const(1, width: 3), a.mantissa.getRange(0)].swizzle();
 
     // mux to choose if we do square root or not
     final fixedCalcSqrt = aFixed.clone()
@@ -71,7 +71,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     // We have a special kind of value where our n will stay constant but
     // our m will grow to n (general formula is [2*(n+m) - 1] - n)
     final expandedCalc =
-        FixedPoint(signed: false, m: a.mantissa.width + 1, n: a.mantissa.width);
+        FixedPoint(signed: false, m: a.mantissa.width + 3, n: a.mantissa.width);
     expandedCalc <=
         [Const(0, fill: true, width: a.mantissa.width), fixedCalcSqrt]
             .swizzle();
@@ -80,7 +80,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final fixedM = FixedPoint.of(
             Const(sqrtMult.value, width: expandedCalc.width),
             signed: false,
-            m: a.mantissa.width + 1,
+            m: a.mantissa.width + 3,
             n: a.mantissa.width) *
         expandedCalc;
 

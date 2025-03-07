@@ -85,4 +85,26 @@ void main() {
         signed: fixed.signed, m: fixed.m, n: fixed.n);
     expect(fpvResult, fpvExpected);
   });
+  test('sqrt(3.9999998)', () async {
+    final fixed = FixedPoint(signed: false, m: 3, n: 23);
+    final dut = FixedPointSqrt(fixed);
+    await dut.build();
+    fixed.put(FixedPointValue.ofDouble(3.9999998,
+        signed: fixed.signed, m: fixed.m, n: fixed.n));
+    final fpvResult = dut.sqrtF.fixedPointValue;
+    final fpvExpected = FixedPointValue.ofDouble(sqrt(3.9999998),
+        signed: fixed.signed, m: fixed.m, n: fixed.n);
+    expect(fpvResult, fpvExpected);
+  });
+  test('sqrt(3.9999998_2)', () async {
+    final fixed = FixedPoint(signed: false, m: 5, n: 23);
+    final dut = FixedPointSqrt(fixed);
+    await dut.build();
+    fixed.put(FixedPointValue.ofDouble(3.9999998,
+        signed: fixed.signed, m: fixed.m, n: fixed.n));
+    final fpvResult = dut.sqrtF.fixedPointValue;
+    final fpvExpected = FixedPointValue.ofDouble(sqrt(3.9999998),
+        signed: fixed.signed, m: fixed.m, n: fixed.n);
+    expect(fpvResult, fpvExpected);
+  });
 }
