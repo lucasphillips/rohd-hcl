@@ -11,8 +11,6 @@
 /// An abstract API for fixed point square root.
 library;
 
-import 'dart:ffi';
-
 import 'package:meta/meta.dart';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/rohd_hcl.dart';
