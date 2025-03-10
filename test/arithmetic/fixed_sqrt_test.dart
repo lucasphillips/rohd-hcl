@@ -12,7 +12,6 @@
 import 'dart:math';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/src/arithmetic/arithmetic.dart';
-import 'package:rohd_hcl/src/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
