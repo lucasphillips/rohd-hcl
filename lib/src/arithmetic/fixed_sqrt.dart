@@ -44,6 +44,10 @@ abstract class FixedPointSqrtBase extends Module {
 class FixedPointSqrt extends FixedPointSqrtBase {
   /// Constructor
   FixedPointSqrt(super.a) {
+    if (a.signed) {
+      throw RohdHclException('Signed values not supported');
+    }
+
     Logic solution =
         FixedPoint(signed: a.signed, name: 'solution', m: a.m + 1, n: a.n + 1);
     Logic remainder =

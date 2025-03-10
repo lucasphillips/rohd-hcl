@@ -6,12 +6,13 @@
 //
 // 2025 March 5
 // Authors: James Farwell <james.c.farwell@intel.com>,
-// Stephen Weeks <stephen.weeks@intel.com>,
-// Curtis Anderson <curtis.anders@intel.com>
+//          Stephen Weeks <stephen.weeks@intel.com>,
+//          Curtis Anderson <curtis.anders@intel.com>
 
 import 'dart:math';
 import 'package:rohd/rohd.dart';
 import 'package:rohd_hcl/src/arithmetic/arithmetic.dart';
+import 'package:rohd_hcl/src/exceptions.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -106,5 +107,9 @@ void main() {
     final fpvExpected = FixedPointValue.ofDouble(sqrt(3.9999998),
         signed: fixed.signed, m: fixed.m, n: fixed.n);
     expect(fpvResult, fpvExpected);
+  });
+  test('sqrt(-3.9999998_2)', () async {
+    final fixed = FixedPoint(signed: true, m: 3, n: 23);
+    expect(() => FixedPointSqrt(fixed), throwsException);
   });
 }
