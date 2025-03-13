@@ -16,7 +16,7 @@ import 'package:rohd_hcl/rohd_hcl.dart';
 class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     extends FloatingPointSqrt<FpType> {
   /// Square root one floating point number [a], returning results
-  /// [sqrtR] and [error]
+  /// [sqrt] and [error]
   FloatingPointSqrtSimple(super.a,
       {super.clk,
       super.reset,
@@ -28,8 +28,8 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final outputSqrt = FloatingPoint(
         exponentWidth: exponentWidth,
         mantissaWidth: mantissaWidth,
-        name: 'sqrtR');
-    output('sqrtR') <= outputSqrt;
+        name: 'sqrt');
+    output('sqrt') <= outputSqrt;
 
     // check to see if we do sqrt at all or just return a
     final isInf = a.isAnInfinity.named('isInf');
@@ -61,7 +61,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
 
     // mux to choose if we do square root or not
     final fixedSqrt = aFixedAdj.clone()
-      ..gets(mux(enableSqrt, FixedPointSqrt(aFixedAdj).sqrtF, aFixedAdj)
+      ..gets(mux(enableSqrt, FixedPointSqrt(aFixedAdj).sqrt, aFixedAdj)
           .named('sqrtMux'));
 
     // convert back to floating point representation

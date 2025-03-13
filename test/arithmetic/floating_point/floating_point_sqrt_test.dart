@@ -52,7 +52,7 @@ void main() {
         final Logic expError = Const(0);
 
         fp.put(fv);
-        final fpOut = sqrtT.sqrtR;
+        final fpOut = sqrtT.sqrt;
         final eOut = sqrtT.error;
         expect(fpOut.floatingPointValue, equals(expSqrt),
             reason: '\t${fp.floatingPointValue} '
@@ -132,7 +132,7 @@ void main() {
 
         fp.put(fv);
 
-        final compResult = sqrtDUT.sqrtR;
+        final compResult = sqrtDUT.sqrt;
         final compError = sqrtDUT.error;
 
         final expResult = FloatingPointValue.populator(
@@ -164,7 +164,7 @@ void main() {
 
     final sqrtDUT = FloatingPointSqrtSimple(fp);
     final rand = Random(513);
-    for (var i = 0; i < 4096; i++) {
+    for (var i = 0; i < 16384; i++) {
       final fv = FloatingPointValue.populator(
               exponentWidth: exponentWidth, mantissaWidth: mantissaWidth)
           .random(rand, normal: true);
@@ -176,7 +176,7 @@ void main() {
           fp.sign.value.toBool()) {
         continue;
       }
-      final compResult = sqrtDUT.sqrtR;
+      final compResult = sqrtDUT.sqrt;
       final compError = sqrtDUT.error;
 
       final expResult = FloatingPointValue.populator(

@@ -44,8 +44,8 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
   late final FpType a;
 
   /// getter for the computed [FloatingPoint] output.
-  late final FloatingPoint sqrtR = (a.clone(name: 'sqrtR') as FpType)
-    ..gets(output('sqrtR'));
+  late final FloatingPoint sqrt = (a.clone(name: 'sqrt') as FpType)
+    ..gets(output('sqrt'));
 
   /// getter for the [error] output.
   late final Logic error = Logic(name: 'error')..gets(output('error'));
@@ -53,7 +53,7 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
   /// The internal error signal to pass through
   late final Logic errorSig;
 
-  /// Square root a floating point number [a], returning result in [sqrtR].
+  /// Square root a floating point number [a], returning result in [sqrt].
   /// - [clk], [reset], [enable] are optional inputs to control a pipestage
   /// (only inserted if [clk] is provided)
   FloatingPointSqrt(FpType a,
@@ -74,7 +74,7 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
     this.a = (a.clone(name: 'a') as FpType)
       ..gets(addInput('a', a, width: a.width));
 
-    addOutput('sqrtR', width: exponentWidth + mantissaWidth + 1);
+    addOutput('sqrt', width: exponentWidth + mantissaWidth + 1);
     errorSig = Logic(name: 'error');
     addOutput('error');
     output('error') <= errorSig;
