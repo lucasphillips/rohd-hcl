@@ -75,9 +75,7 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
       ..gets(addInput('a', a, width: a.width));
 
     addOutput('sqrt', width: exponentWidth + mantissaWidth + 1);
-    errorSig = Logic(name: 'error');
     addOutput('error');
-    output('error') <= errorSig;
   }
 
   /// Pipelining helper that uses the context for signals clk/enable/reset

@@ -30,6 +30,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         mantissaWidth: mantissaWidth,
         name: 'sqrt');
     output('sqrt') <= outputSqrt;
+    late final error = output('error');
 
     // check to see if we do sqrt at all or just return a
     final isInf = a.isAnInfinity.named('isInf');
@@ -70,14 +71,14 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
 
     // final calculation results
     Combinational([
-      errorSig < Const(0),
+      error < Const(0),
       If.block([
         Iff(isInf & ~a.sign, [
           outputSqrt < outputSqrt.inf(),
         ]),
         ElseIf(isInf & a.sign, [
           outputSqrt < outputSqrt.inf(negative: true),
-          errorSig < Const(1),
+          error < Const(1),
         ]),
         ElseIf(isNaN, [
           outputSqrt < outputSqrt.nan,
@@ -89,7 +90,7 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         ]),
         ElseIf(a.sign, [
           outputSqrt < outputSqrt.nan,
-          errorSig < Const(1),
+          error < Const(1),
         ]),
         Else([
           outputSqrt.sign < a.sign,
