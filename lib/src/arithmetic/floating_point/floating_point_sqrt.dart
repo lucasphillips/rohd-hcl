@@ -23,16 +23,19 @@ abstract class FloatingPointSqrt<FpType extends FloatingPoint> extends Module {
 
   /// The [clk] : if a non-null clock signal is passed in, a pipestage is added
   /// to the square root to help optimize frequency.
+  /// Plummed for future work for pipelining, currently unsupported.
   @protected
   late final Logic? clk;
 
   /// Optional [reset], used only if a [clk] is not null to reset the pipeline
   /// flops.
+  /// Plummed for future work for pipelining, currently unsupported.
   @protected
   late final Logic? reset;
 
   /// Optional [enable], used only if a [clk] is not null to enable the pipeline
   /// flops.
+  /// Plummed for future work for pipelining, currently unsupported.
   @protected
   late final Logic? enable;
 
