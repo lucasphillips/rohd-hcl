@@ -36,7 +36,9 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final isInf = a.isAnInfinity.named('isInf');
     final isNaN = a.isNaN.named('isNan');
     final isZero = a.isAZero.named('isZero');
-    final enableSqrt = ~((isInf | isNaN | isZero) | a.sign).named('enableSqrt');
+    final isDeNormal = ~a.isNormal.named('isDenorm');
+    final enableSqrt =
+        ~((isInf | isNaN | isZero | isDeNormal) | a.sign).named('enableSqrt');
 
     // debias the exponent
     final deBiasAmt = (1 << a.exponent.width - 1) - 1;
@@ -45,8 +47,9 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
     final deBiasExp = a.exponent - deBiasAmt;
 
     // shift exponent
-    final shiftedExp =
-        [deBiasExp[-1], deBiasExp.slice(a.exponent.width - 1, 1)].swizzle();
+    final shiftedExp = [deBiasExp[-1], deBiasExp.slice(a.exponent.width - 1, 1)]
+        .swizzle()
+        .named('deBiasExp');
 
     // check if exponent was odd
     final isExpOdd = deBiasExp[0];
@@ -90,6 +93,12 @@ class FloatingPointSqrtSimple<FpType extends FloatingPoint>
         ]),
         ElseIf(a.sign, [
           outputSqrt < outputSqrt.nan,
+          error < Const(1),
+        ]),
+        ElseIf(isDeNormal, [
+          outputSqrt.sign < a.sign,
+          outputSqrt.exponent < a.exponent,
+          outputSqrt.mantissa < a.mantissa,
           error < Const(1),
         ]),
         Else([
